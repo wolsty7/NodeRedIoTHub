@@ -259,13 +259,13 @@ module.exports = function (RED) {
         var node = this;
         this.client = null;	//config.client;	//mw
         this.reconnectTimer = null;
-
+	this.connectionString = config.connectionString;
         // Create the Node-RED node
         RED.nodes.createNode(this, config);
 
         setStatus(node, statusEnum.disconnected);
 
-        connectToEventHub( this, node.connectionString );
+        connectToEventHub( this, this.connectionString );
 
         node.on('close', function() {
             disconnectFromEventHub(node);
