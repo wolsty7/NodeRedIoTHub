@@ -14,9 +14,6 @@
         },
         paletteLabel: function(){
             return "Azure IoT Hub";
-        },
-        credentials: {
-            hostname: {type:"text"}
         }
     });
 
@@ -44,6 +41,7 @@
         category: 'cloud',
         color: '#00abec',
         defaults: {
+            connectionString: {value:"", required: true},
             name: {value:"Azure IoT Hub Receiver"}
         },
         inputs:0,
