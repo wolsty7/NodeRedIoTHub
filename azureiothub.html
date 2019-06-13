@@ -48,7 +48,8 @@
         outputs:1,
         icon: "azureiothub.png",
         label: function() {
-            return this.name||"Azure IoT Hub Receiver";
+            //return this.name||"Azure IoT Hub Receiver";
+            return this.name||"Azure IoT Hub Receiver"+":"+this.connectionString||"";
         },
         paletteLabel: function(){
             return "Azure IoT Hub Receiver";
