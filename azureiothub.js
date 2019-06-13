@@ -265,7 +265,7 @@ module.exports = function (RED) {
 
         setStatus(node, statusEnum.disconnected);
 
-        connectToEventHub( this, node.credentials.connectionString );
+        connectToEventHub( this, node.connectionString );
 
         node.on('close', function() {
             disconnectFromEventHub(node);
@@ -324,10 +324,11 @@ module.exports = function (RED) {
     });
 
     RED.nodes.registerType("azureiothubreceiver", AzureIoTHubReceiverNode, {
-        credentials: {
-            connectionString: { type: "text" }
-        },
+//        credentials: {
+//            connectionString: { type: "text" }
+//        },
         defaults: {
+	    connectionString: { value: "Add a connection string" },
             name: { value: "Azure IoT Hub Receiver" }
         }
     });
