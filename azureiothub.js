@@ -257,7 +257,7 @@ module.exports = function (RED) {
     function AzureIoTHubReceiverNode(config) {
         // Store node for further use
         var node = this;
-        this.client = null;
+        this.client = null;	//config.client;	//mw
         this.reconnectTimer = null;
 
         // Create the Node-RED node
