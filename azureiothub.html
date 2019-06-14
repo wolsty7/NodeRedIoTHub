@@ -4,13 +4,14 @@
         color: '#00abec',
         defaults: {
             name: {value:"Azure IoT Hub"},
-            protocol: {value:"amqp"}
+            protocol: {value:"amqp"},
+			hostname: {value:"", required:true}
         },
         inputs:1,
         outputs:1,
         icon: "azureiothub.png",
         label: function() {
-            return this.name||"Azure IoT Hub";
+            return this.name||"Azure IoT Hub"+":"+this.hostname||"";
         },
         paletteLabel: function(){
             return "Azure IoT Hub";
@@ -21,19 +22,17 @@
         category: 'cloud',
         color: '#00abec',
         defaults: {
-            name: {value:"Azure IoT Hub Registry"}
+            name: {value:"Azure IoT Hub Registry"},
+			connectionString: {type:"text", required:true}
         },
         inputs:1,
         outputs:1,
         icon: "azureiothub.png",
         label: function() {
-            return this.name||"Azure IoT Hub Registry";
+            return this.name||"Azure IoT Hub Registry"+":"+this.connectionString||"";
         },
         paletteLabel: function(){
             return "Azure IoT Hub Registry";
-        },
-        credentials: {
-            connectionString: {type:"text"}
         }
     });
 
@@ -60,19 +59,17 @@
         category: 'cloud',
         color: '#00abec',
         defaults: {
-            name: {value:"Azure IoT Hub Device Twin"}
+            name: {value:"Azure IoT Hub Device Twin"},
+			connectionString: {type:"text", required:true}
         },
         inputs:1,
         outputs:1,
         icon: "azureiothub.png",
         label: function() {
-            return this.name||"Azure IoT Hub Device Twin";
+            return this.name||"Azure IoT Hub Device Twin"+":"+this.connectionString||"";
         },
         paletteLabel: function(){
             return "Azure IoT Hub Device Twin";
-        },
-        credentials: {
-            connectionString: {type:"text"}
         }
     });
 </script>
