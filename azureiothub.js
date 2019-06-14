@@ -128,7 +128,7 @@ module.exports = function (RED) {
         // Store node for further use
         var node = this;
         //nodeConfig = config;
-
+		this.hostname=config.hostname;
         // Create the Node-RED node
         RED.nodes.createNode(this, config);
         node.on('input', function (msg) {
@@ -148,7 +148,7 @@ module.exports = function (RED) {
             //Creating connectionString
             //Sample
             //HostName=sample.azure-devices.net;DeviceId=sampleDevice;SharedAccessKey=wddU//P8fdfbSBDbIdghZAoSSS5gPhIZREhy3Zcv0JU=
-            newConnectionString = "HostName=" + node.credentials.hostname + ";DeviceId=" + messageJSON.deviceId + ";SharedAccessKey=" + messageJSON.key
+            newConnectionString = "HostName=" + this.hostname + ";DeviceId=" + messageJSON.deviceId + ";SharedAccessKey=" + messageJSON.key
 	    if( typeof messageJSON.protocol !== 'undefined'){
             	newProtocol = messageJSON.protocol;
 	    } else {
@@ -169,13 +169,13 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
 
         var node = this;
-
+	this.connectionString = config.connectionString;
         node.on('input', function (msg) {
             if (typeof (msg.payload) == 'string') {
                 msg.payload = JSON.parse(msg.payload);
             }
 
-            var registry = Registry.fromConnectionString(node.credentials.connectionString);
+            var registry = Registry.fromConnectionString(this.connectionString);
 
             registry.create(msg.payload, function (err, device) {
                 if (err) {
@@ -184,7 +184,7 @@ module.exports = function (RED) {
                 } else {
                     node.log("Device created: " + JSON.stringify(device));
                     node.log("Device ID: " + device.deviceId + " - primaryKey: " + device.authentication.SymmetricKey.primaryKey + " - secondaryKey: " + device.authentication.SymmetricKey.secondaryKey);
-                    node.send("Device ID: " + device.deviceId + " - primaryKey: " + device.authentication.SymmetricKey.primaryKey + " - secondaryKey: " + device.authentication.SymmetricKey.secondaryKey);
+                    node.send({"deviceId":device.deviceId, "PrimaryKey":device.authentication.SymmetricKey.primaryKey,"SecondaryKey":device.authentication.SymmetricKey.secondaryKey});
                 }
             });
         });
@@ -259,7 +259,7 @@ module.exports = function (RED) {
         var node = this;
         this.client = null;	//config.client;	//mw
         this.reconnectTimer = null;
-	this.connectionString = config.connectionString;
+		this.connectionString = config.connectionString;
         // Create the Node-RED node
         RED.nodes.createNode(this, config);
 
@@ -276,26 +276,26 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
 
         var node = this;
-
+		this.connectionString=config.connectionString;
         node.on('input', function (msg) {
-            var registry = Registry.fromConnectionString(node.credentials.connectionString);
+		var registry = Registry.fromConnectionString(this.connectionString);
 
-            if( typeof msg.payload === "string" ) var query = registry.createQuery("SELECT * FROM devices WHERE deviceId ='" + msg.payload + "'");
-            else var query = registry.createQuery("SELECT * FROM devices");
+		if( typeof msg.payload === "string" ) var query = registry.createQuery("SELECT * FROM devices WHERE deviceId ='" + msg.payload + "'");
+		else var query = registry.createQuery("SELECT * FROM devices");
 
-            query.nextAsTwin( function(err, results){
-                if (err) {
-                    node.error('Error while trying to retrieve device twins: ' + err.message);
-                    msg.error = err;
-                    delete msg.payload;
-                    node.send(msg);
-                } else {
-                    msg.payload = results;
-                    disconnectFromIoTHub(node, this);
-                    node.send(msg);
-                }
-            });
+		query.nextAsTwin( function(err, results){
+			if (err) {
+				node.error('Error while trying to retrieve device twins: ' + err.message);
+				msg.error = err;
+				delete msg.payload;
+				node.send(msg);
+			} else {
+				msg.payload = results;
+				disconnectFromIoTHub(node, this);
+				node.send(msg);
+			}
         });
+    });
 
         node.on('close', function () {
             disconnectFromIoTHub(node, this);
@@ -304,10 +304,8 @@ module.exports = function (RED) {
 
     // Registration of the node into Node-RED
     RED.nodes.registerType("azureiothub", AzureIoTHubNode, {
-        credentials: {
-            hostname: { type: "text" }
-        },
         defaults: {
+			hostname: { type: "text" },
             name: { value: "Azure IoT Hub" },
             protocol: { value: "amqp" }
         }
@@ -315,30 +313,23 @@ module.exports = function (RED) {
 
     // Registration of the node into Node-RED
     RED.nodes.registerType("azureiothubregistry", IoTHubRegistry, {
-        credentials: {
-            connectionString: { type: "text" }
-        },
         defaults: {
-            name: { value: "Azure IoT Hub Registry" },
+			connectionString: { value: "Add a connection string" },
+            name: { value: "Azure IoT Hub Registry" }
         }
     });
 
     RED.nodes.registerType("azureiothubreceiver", AzureIoTHubReceiverNode, {
-//        credentials: {
-//            connectionString: { type: "text" }
-//        },
         defaults: {
-	    connectionString: { value: "Add a connection string" },
+			connectionString: { value: "Add a connection string" },
             name: { value: "Azure IoT Hub Receiver" }
         }
     });
 
     RED.nodes.registerType("azureiothubdevicetwin", AzureIoTHubDeviceTwin, {
-        credentials: {
-            connectionString: { type: "text" }
-        },
         defaults: {
-            name: { value: "Azure IoT Hub Device Twin" }
+			connectionString: { value: "Add a connection string" },
+            name: { value: "Azure IoT Hub Receiver" }
         }
     });
 
